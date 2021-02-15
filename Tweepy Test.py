@@ -38,17 +38,19 @@ def recievTweets(tweets):
     for i in range(100):
         # print(i)
         # print(twitter_users)
-        print()
-        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items():
-            if checked_tweets.__contains__(tweet.id):
-                break
-            checked_tweets.append(tweet.id)
-            print(checked_tweets)
-            fileName = "tweet" + str(tweet.id)+".json"
-            tweets.append(tweet)
-            df = tweets_to_data_frame(tweet)
-            print(df.reset_index().to_json(orient='records'))
-            df.to_json(orient='records', path_or_buf=fileName)
+        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i], count=5).items():
+            try:
+                if checked_tweets.__contains__(tweet.id):
+                    break
+                checked_tweets.append(tweet.id)
+                print(checked_tweets)
+                fileName = "tweet" + str(tweet.id)+".json"
+                tweets.append(tweet)
+                df = tweets_to_data_frame(tweet)
+                print(df.reset_index().to_json(orient='records'))
+                df.to_json(orient='records', path_or_buf=fileName)
+            except:
+                continue
         print("len tweets = ")
         print(len(tweets))
         # print(twitter_users[i])
