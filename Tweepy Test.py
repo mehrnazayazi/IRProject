@@ -30,7 +30,8 @@ def get_friend_list(twitter_user):
 tweets = []
 twitter_users1 = []
 twitter_users1.append("PatMcAfeeShow")
-
+checked_tweets = []
+checked_users = []
 
 
 def RecievTweets(tweets):
@@ -40,7 +41,10 @@ def RecievTweets(tweets):
         # print(i)
         # print(twitter_users)
         for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items(1):
-            #TODO check for Duplicate
+            if checked_tweets.__contains__(tweet.id):
+                break
+            checked_tweets.append(tweet.id)
+            print(checked_tweets)
             fileName = "tweet" + str(tweet.id)+".json"
             tweets.append(tweet)
             df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
@@ -66,8 +70,10 @@ def RecievTweets(tweets):
         print(len(tweets))
         # print(twitter_users[i])
         for friend in twitter_client.friends(twitter_users1[i]):
-            #TODO check for Duplicate user
-            twitter_users1.append(friend.screen_name)
+            if checked_users.__contains__(friend):
+                continue
+            else:
+                twitter_users1.append(friend.screen_name)
     return
 
 
