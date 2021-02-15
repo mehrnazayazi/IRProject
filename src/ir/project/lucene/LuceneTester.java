@@ -20,7 +20,7 @@ public class LuceneTester {
         try {
             tester = new LuceneTester();
             tester.createIndex();
-            tester.search("Kat");
+            tester.search("Vincent");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
@@ -49,8 +49,7 @@ public class LuceneTester {
                 " documents found. Time :" + (endTime - startTime));
         for(ScoreDoc scoreDoc : hits.scoreDocs) {
             Document doc = searcher.getDocument(scoreDoc);
-            System.out.println("File: "
-                    + doc.get(LuceneConstants.FILE_PATH));
+            System.out.println("(score: " + scoreDoc.score + ") --> "  + doc.get("tweets"));
         }
         searcher.close();
     }

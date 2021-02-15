@@ -9,6 +9,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -22,17 +23,17 @@ import org.apache.lucene.util.Version;
 public class Searcher {
 
     IndexSearcher indexSearcher;
-    QueryParser queryParser;
+    MultiFieldQueryParser queryParser;
     Query query;
     IndexReader reader;
+    private static  String[] fields = {"tweets", "name", "screen_name", "location", "description"};
     public Searcher(Path indexDirectoryPath)
             throws IOException {
         Directory indexDirectory =
                 FSDirectory.open(indexDirectoryPath);
         reader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(reader);
-        queryParser = new QueryParser(
-                LuceneConstants.CONTENTS,
+        queryParser = new MultiFieldQueryParser(fields,
                 new StandardAnalyzer());
     }
 
