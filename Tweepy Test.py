@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import _thread
 import time
+import json
 
 
 auth = OAuthHandler(twitter_credentials.CONSUMER_KEY, twitter_credentials.CONSUMER_SECRET)
@@ -43,12 +44,18 @@ def RecievTweets(tweets):
             tweets.append(tweet)
             df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
             df['id'] = np.array([tweet.id])
+            df['Username'] = np.array([tweet.screen_name])
             df['len'] = np.array([len(tweet.text)])
             df['date'] = np.array([tweet.created_at])
             df['source'] = np.array([tweet.source])
             df['likes'] = np.array([tweet.favorite_count])
             df['retweets'] = np.array([tweet.retweet_count])
-            df.to_json(fileName)
+            # json_dict = json.loads(df.to_json(orient='split'))
+            # del json_dict['index']
+            # with open(fileName, 'w') as outfile:
+            #     json.dump(json_dict, outfile)
+            print(df.reset_index().to_json(orient='records'))
+            df.to_json(orient='records', path_or_buf=fileName)
         print("len tweets = ")
         print(len(tweets))
         # print(twitter_users[i])
