@@ -34,36 +34,19 @@ checked_tweets = []
 checked_users = []
 
 
-def RecievTweets(tweets):
-    # twitter_users.append(None)
-
-    for i in range(2):
+def recievTweets(tweets):
+    for i in range(100):
         # print(i)
         # print(twitter_users)
-        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items(1):
+        print()
+        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items():
             if checked_tweets.__contains__(tweet.id):
                 break
             checked_tweets.append(tweet.id)
             print(checked_tweets)
             fileName = "tweet" + str(tweet.id)+".json"
             tweets.append(tweet)
-            df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
-            df = pd.DataFrame(data=[tweet.text], columns=['tweets'])
-            df['id'] = np.array([tweet.id])
-            df['screen_name'] = np.array([tweet.user.screen_name])
-            df['name'] = np.array([tweet.user.name])
-            df['location'] = np.array([tweet.user.location])
-            df['description'] = np.array([tweet.user.description])
-            df['followers_count'] = np.array([tweet.user.followers_count])
-            df['len'] = np.array([len(tweet.text)])
-            df['date'] = np.array([tweet.created_at])
-            df['source'] = np.array([tweet.source])
-            df['likes'] = np.array([tweet.favorite_count])
-            df['retweets'] = np.array([tweet.retweet_count])
-            # json_dict = json.loads(df.to_json(orient='split'))
-            # del json_dict['index']
-            # with open(fileName, 'w') as outfile:
-            #     json.dump(json_dict, outfile)
+            df = tweets_to_data_frame(tweet)
             print(df.reset_index().to_json(orient='records'))
             df.to_json(orient='records', path_or_buf=fileName)
         print("len tweets = ")
@@ -80,21 +63,25 @@ def RecievTweets(tweets):
 # print(tweets)
 
 
-def tweets_to_data_frame(tweets):
-    df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['Tweets'])
-
-    df['id'] = np.array([tweet.id for tweet in tweets])
-    df['len'] = np.array([len(tweet.text) for tweet in tweets])
-    df['date'] = np.array([tweet.created_at for tweet in tweets])
-    df['source'] = np.array([tweet.source for tweet in tweets])
-    df['likes'] = np.array([tweet.favorite_count for tweet in tweets])
-    df['retweets'] = np.array([tweet.retweet_count for tweet in tweets])
-
+def tweets_to_data_frame(tweet):
+    df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
+    df = pd.DataFrame(data=[tweet.text], columns=['tweets'])
+    df['id'] = np.array([tweet.id])
+    df['screen_name'] = np.array([tweet.user.screen_name])
+    df['name'] = np.array([tweet.user.name])
+    df['location'] = np.array([tweet.user.location])
+    df['description'] = np.array([tweet.user.description])
+    df['followers_count'] = np.array([tweet.user.followers_count])
+    df['len'] = np.array([len(tweet.text)])
+    df['date'] = np.array([tweet.created_at])
+    df['source'] = np.array([tweet.source])
+    df['likes'] = np.array([tweet.favorite_count])
+    df['retweets'] = np.array([tweet.retweet_count])
     return df
 
 
-
-RecievTweets(tweets)
+if __name__ == '__main__':
+    recievTweets(tweets)
 
 
 # _thread.start_new_thread(RecievTweets, (tweets,))
