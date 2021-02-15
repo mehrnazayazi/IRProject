@@ -40,11 +40,12 @@ def RecievTweets(tweets):
         # print(i)
         # print(twitter_users)
         for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items(1):
+            #TODO check for Duplicate
             fileName = "tweet" + str(tweet.id)+".json"
             tweets.append(tweet)
             df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
             df['id'] = np.array([tweet.id])
-            df['Username'] = np.array([tweet.screen_name])
+            df['Username'] = np.array([tweet.user.screen_name])
             df['len'] = np.array([len(tweet.text)])
             df['date'] = np.array([tweet.created_at])
             df['source'] = np.array([tweet.source])
@@ -60,6 +61,7 @@ def RecievTweets(tweets):
         print(len(tweets))
         # print(twitter_users[i])
         for friend in twitter_client.friends(twitter_users1[i]):
+            #TODO check for Duplicate user
             twitter_users1.append(friend.screen_name)
     return
 
