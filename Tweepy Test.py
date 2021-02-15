@@ -1,3 +1,4 @@
+
 from tweepy import API
 from tweepy import Cursor
 from tweepy.streaming import StreamListener
@@ -8,6 +9,8 @@ import twitter_credentials
 
 import numpy as np
 import pandas as pd
+import _thread
+import time
 
 
 auth = OAuthHandler(twitter_credentials.CONSUMER_KEY, twitter_credentials.CONSUMER_SECRET)
@@ -24,19 +27,34 @@ def get_friend_list(twitter_user):
 
 
 tweets = []
-twitter_users = []
-# twitter_users.append(None)
-twitter_users.append("PatMcAfeeShow")
-for i in range(2):
-    # print(i)
-    # print(twitter_users)
-    for tweet in Cursor(twitter_client.user_timeline, id=twitter_users[i]).items(1):
-        tweets.append(tweet)
-    # print("len tweets = ")
-    # print(len(tweets))
-    # print(twitter_users[i])
-    for friend in twitter_client.friends(twitter_users[i]):
-        twitter_users.append(friend.screen_name)
+twitter_users1 = []
+twitter_users1.append("PatMcAfeeShow")
+
+
+
+def RecievTweets(tweets):
+    # twitter_users.append(None)
+
+    for i in range(2):
+        # print(i)
+        # print(twitter_users)
+        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i]).items(1):
+            fileName = "tweet" + str(tweet.id)+".json"
+            tweets.append(tweet)
+            df = pd.DataFrame(data=[tweet.text], columns=['Tweets'])
+            df['id'] = np.array([tweet.id])
+            df['len'] = np.array([len(tweet.text)])
+            df['date'] = np.array([tweet.created_at])
+            df['source'] = np.array([tweet.source])
+            df['likes'] = np.array([tweet.favorite_count])
+            df['retweets'] = np.array([tweet.retweet_count])
+            df.to_json(fileName)
+        print("len tweets = ")
+        print(len(tweets))
+        # print(twitter_users[i])
+        for friend in twitter_client.friends(twitter_users1[i]):
+            twitter_users1.append(friend.screen_name)
+    return
 
 
 # print(tweets)
@@ -54,9 +72,15 @@ def tweets_to_data_frame(tweets):
 
     return df
 
-tweetsDf = tweets_to_data_frame(tweets)
-tweetsDf.to_json(r'tweets.json')
-print(tweetsDf)
+
+
+RecievTweets(tweets)
+
+
+# _thread.start_new_thread(RecievTweets, (tweets,))
+# tweetsDf = tweets_to_data_frame(tweets)
+# tweetsDf.to_json(r'tweets.json')
+# print(tweetsDf)
 
 
 
