@@ -36,6 +36,9 @@ for i in range(2):
 
 
 print(tweets)
+for tweet in tweets:
+    with open("tweets.txt", 'a') as tf:
+        tf.write(str(tweet))
 
 
 
