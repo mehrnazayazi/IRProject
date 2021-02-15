@@ -44,7 +44,7 @@ def recievTweets(tweets):
                     break
                 checked_tweets.append(tweet.id)
                 print(checked_tweets)
-                fileName = "tweet" + str(tweet.id)+".json"
+                fileName = "./Data/tweet" + str(tweet.id)+".json"
                 tweets.append(tweet)
                 df = tweets_to_data_frame(tweet)
                 print(df.reset_index().to_json(orient='records'))
