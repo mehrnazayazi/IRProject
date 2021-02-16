@@ -41,10 +41,10 @@ def recievTweets(tweets):
                 if checked_tweets.__contains__(tweet.id):
                     break
                 checked_tweets.append(tweet.id)
-                fileName = "./Data/tweet" + str(tweet.id)+".json"
+                fileName = "tweet" + str(tweet.id)+".json"
                 tweets.append(tweet)
                 df = tweets_to_data_frame(tweet)
-                df.to_json(orient='records', path_or_buf=fileName)
+                df.to_json(orient='records', path_or_buf="./Data/"+fileName)
             except:
                 continue
         for friend in twitter_client.friends(twitter_users1[i]):
