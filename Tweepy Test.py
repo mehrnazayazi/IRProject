@@ -34,22 +34,15 @@ checked_users = []
 
 def recievTweets(tweets):
     for i in range(100):
-        counter = 1
-        for tweet in Cursor(twitter_client.user_timeline, id=twitter_users1[i], count=5).items():
-            try:
-                if counter < 5:
-                    if checked_tweets.__contains__(tweet.id):
-                        break
-                    checked_tweets.append(tweet.id)
-                    fileName = "tweet" + str(tweet.id) + ".json"
-                    tweets.append(tweet)
-                    df = tweets_to_data_frame(tweet)
-                    df.to_json(orient='records', path_or_buf="./Data/" + fileName)
-                    counter+=1
-                else:
-                    break
-            except:
-                continue
+        tweetsCursor = Cursor(twitter_client.user_timeline, id=twitter_users1[i], count=5).items()
+        for tweet in tweetsCursor:
+            if checked_tweets.__contains__(tweet.id):
+                break
+            checked_tweets.append(tweet.id)
+            fileName = "tweet" + str(tweet.id) + ".json"
+            tweets.append(tweet)
+            df = tweets_to_data_frame(tweet)
+            df.to_json(orient='records', path_or_buf="./Data/" + fileName)
         for friend in twitter_client.friends(twitter_users1[i]):
             if checked_users.__contains__(friend):
                 continue
