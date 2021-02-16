@@ -46,7 +46,7 @@ def recievTweets(tweets):
             tweets.append(tweet)
             df = tweets_to_data_frame(tweet)
             print(df.reset_index().to_json(orient='records'))
-            df.to_json(orient='records', path_or_buf=fileName)
+            df.to_json(orient='records', path_or_buf="./Data/"+fileName)
         print("len tweets = ")
         print(len(tweets))
         # print(twitter_users[i])

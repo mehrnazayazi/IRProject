@@ -20,7 +20,7 @@ public class LuceneTester {
         try {
             tester = new LuceneTester();
             tester.createIndex();
-            tester.search("Vincent");
+            tester.search("Vincent Jackson");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
