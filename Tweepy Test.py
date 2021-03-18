@@ -5,11 +5,13 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import matplotlib.pyplot as plt
 
-
 import twitter_credentials
+from textblob import TextBlob
 
 import numpy as np
 import pandas as pd
+import re
+
 import _thread
 import time
 import json
@@ -18,7 +20,6 @@ auth = OAuthHandler(twitter_credentials.CONSUMER_KEY, twitter_credentials.CONSUM
 auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_TOKEN_SECRET)
 twitter_client = API(auth)
 twitter_user = "PatMcAfeeShow"
-
 
 
 def get_friend_list(twitter_user):
@@ -34,16 +35,18 @@ twitter_users1.append("PatMcAfeeShow")
 checked_tweets = []
 checked_users = []
 usersTweets = []
+
+
 def recievTweets(tweets):
     cc = 0
     print("in recieve")
-    for i in range(10):
-        tweetsCursor = Cursor(twitter_client.user_timeline, id=twitter_users1[i], count=200).items(200)
+    for i in range(3):
+        tweetsCursor = Cursor(twitter_client.user_timeline, id=twitter_users1[i], count=50).items(50)
         userTweets = []
         cc = 0
         for tweet in tweetsCursor:
             print(cc)
-            cc+=1
+            cc += 1
             userTweets.append(tweet)
             if checked_tweets.__contains__(tweet.id):
                 break
@@ -59,7 +62,7 @@ def recievTweets(tweets):
                 continue
             else:
                 twitter_users1.append(friend.screen_name)
-    return
+    return tweets_to_data_frame(tweets)
 
 
 def tweet_to_data_frame(tweet):
@@ -76,6 +79,8 @@ def tweet_to_data_frame(tweet):
     df['source'] = np.array([tweet.source])
     df['likes'] = np.array([tweet.favorite_count])
     df['retweets'] = np.array([tweet.retweet_count])
+    df['sentiment'] = np.array([analyze_sentiment(tweet)])
+
     return df
 
 
@@ -93,17 +98,41 @@ def tweets_to_data_frame(tweets):
     df['source'] = np.array([tweet.source for tweet in tweets])
     df['likes'] = np.array([tweet.favorite_count for tweet in tweets])
     df['retweets'] = np.array([tweet.retweet_count for tweet in tweets])
+    df['sentiment'] = np.array([analyze_sentiment(tweet) for tweet in tweets])
+
     return df
+
+
+def clean_tweet(tweet):
+    return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
+
+
+def analyze_sentiment(tweet):
+    analysis = TextBlob(clean_tweet(tweet))
+
+    if analysis.sentiment.polarity > 0:
+        return 1
+    elif analysis.sentiment.polarity == 0:
+        return 0
+    else:
+        return -1
 
 
 if __name__ == '__main__':
     recievTweets(tweets)
-    print("usertweets leng"+str(len(usersTweets[0])))
+    print("usertweets leng" + str(len(usersTweets[0])))
     for user in usersTweets:
         avglength = np.mean(user['len'])
-        print("avglength"+str(avglength))
-        time_likes = pd.Series(data=user['len'].values, index=user['date'])
-        time_likes.plot(figsize=(16, 4), color='r')
+        print("avglength" + str(avglength))
+        # time_likes = pd.Series(data=user['likes'].values, index=user['date'])
+        # time_likes.plot(figsize=(16, 4), color='r')
+        tweetsDf = tweets_to_data_frame(tweets)
+        # plt.show()
+        time_likes = pd.Series(data=user['likes'].values, index=user['date'])
+        time_likes.plot(figsize=(16, 4), label="likes", legend=True)
+
+        time_retweets = pd.Series(data=user['retweets'].values, index=user['date'])
+        time_retweets.plot(figsize=(16, 4), label="retweets", legend=True)
         plt.show()
     # try:
     #     _thread.start_new_thread(recievTweets, (tweets,))

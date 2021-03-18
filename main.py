@@ -88,6 +88,8 @@ class TwitterListener(StreamListener):
         print(status)
 
 
+
+
 if __name__ == '__main__':
     # Authenticate using config.py and connect to Twitter Streaming API.
     hash_tag_list = ["donal trump", "hillary clinton", "barack obama", "bernie sanders"]
